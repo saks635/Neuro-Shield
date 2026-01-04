@@ -12,13 +12,13 @@ EPOCHS = 5
 
 # Data preprocessing
 train_datagen = ImageDataGenerator(rescale=1./255)
-test_datagen = ImageDataGenerator(rescale=1./255)
+test_datagen = ImageDataGenerator(rescale=1./255) # It normalizes image pixel values from 0–255 → 0–1.
 
 train_data = train_datagen.flow_from_directory(
     train_path,
     target_size=IMG_SIZE,
     batch_size=BATCH_SIZE,
-    class_mode='categorical'
+    class_mode='categorical' # The labels are converted into one-hot encoded vectors for multi-class classification.
 )
 
 test_data = test_datagen.flow_from_directory(
@@ -27,14 +27,14 @@ test_data = test_datagen.flow_from_directory(
     batch_size=BATCH_SIZE,
     class_mode='categorical'
 )
-
+#Each filter is 3×3 pixels, sliding over the image to extract features.
 # CNN architecture
 model = Sequential([
-    Conv2D(32, (3, 3), activation='relu', input_shape=(128, 128, 3)),
+    Conv2D(32, (3, 3), activation='relu', input_shape=(128, 128, 3)), # 32 feature map
     MaxPooling2D(2, 2),
     Conv2D(64, (3, 3), activation='relu'),
-    MaxPooling2D(2, 2),
-    Flatten(),
+    MaxPooling2D(2, 2), # reduces the image size and keep only imp. features
+    Flatten(), # 2d-> 1d
     Dense(128, activation='relu'),
     Dropout(0.4),
     Dense(4, activation='softmax')  # 4 classes
@@ -48,4 +48,5 @@ model.fit(train_data, validation_data=test_data, epochs=EPOCHS)
 # Save model
 os.makedirs("models", exist_ok=True)
 model.save("models/best_model.keras")
+
 
